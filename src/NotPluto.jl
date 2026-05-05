@@ -27,6 +27,17 @@ function _apply_patches!()
     # namespace.
     Pluto.eval(:(import PlutoDependencyExplorer: DEFAULT_PRECEDENCE_HEURISTIC))
 
+    # Pluto's `responses[:run_multiple_cells]` calls `update_save_run!` with
+    # `auto_solve_multiple_defs=true`, which uses `cells_to_disable_to_resolve_multiple_defs`
+    # to silently disable previously-existing definers when a new cell defines
+    # the same variable. That bypasses our `allow_multiple_defs=true` patch
+    # (which only affects `topological_order_cached`'s errable set). Stub the
+    # resolver to always return an empty dict so multi-def cells are left alone
+    # and last-write-wins applies.
+    Pluto.eval(:(cells_to_disable_to_resolve_multiple_defs(
+        ::NotebookTopology, ::NotebookTopology, ::Vector{Cell}
+    )::Dict{Cell,Any} = Dict{Cell,Any}()))
+
     m = first(methods(Pluto.run_reactive_core!))
     file = String(m.file)
     isfile(file) || error("NotPluto: source file $file is not on disk; cannot patch.")
