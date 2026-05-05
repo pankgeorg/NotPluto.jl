@@ -20,6 +20,13 @@ becomes non-reactive for the rest of the Julia session.
 run(; kwargs...) = Pluto.run(; run_notebook_on_load=false, kwargs...)
 
 function _apply_patches!()
+    # `Run.jl:440`'s setup-cells filter uses `DEFAULT_PRECEDENCE_HEURISTIC`
+    # unqualified, but Pluto's `import PlutoDependencyExplorer: ...` list omits
+    # it. The branch is dead under Pluto's default `run_notebook_on_load=true`,
+    # but we flip that switch — so we also need to bring the name into Pluto's
+    # namespace.
+    Pluto.eval(:(import PlutoDependencyExplorer: DEFAULT_PRECEDENCE_HEURISTIC))
+
     m = first(methods(Pluto.run_reactive_core!))
     file = String(m.file)
     isfile(file) || error("NotPluto: source file $file is not on disk; cannot patch.")
