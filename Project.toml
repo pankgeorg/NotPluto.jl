@@ -1,7 +1,7 @@
 name = "NotPluto"
 uuid = "1e9a7b3e-0c4d-4f4a-9a4f-2f6c0e1d4a01"
 authors = ["Panagiotis Georgakopoulos <panagiotis.georgakopoulos@juliahub.com>"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 Pluto = "c3e4b0f8-55cb-11ea-2926-15256bba5781"
